@@ -4,9 +4,6 @@ import pandas as pd
 
 st.title("Simulation de marché et trading virtuel")
 
-# ---------------------------------------------------------
-# Chargement des données
-# ---------------------------------------------------------
 @st.cache_data
 def load_data():
     tickers = {
@@ -25,19 +22,16 @@ def load_data():
     data = yf.download(list(tickers.values()), period="5y")["Close"]
     data.columns = tickers.keys()
 
-    # 🔥 Remplir les trous avec la valeur du jour précédent
+    # pour remplir les trous
     data = data.ffill()
 
-    # Supprimer les colonnes entièrement vides (rare mais possible)
+    # pour les colonnes vides
     data = data.dropna(axis=1, how="all")
 
     return data
 
 data = load_data()
 
-# ---------------------------------------------------------
-# Initialisation du portefeuille
-# ---------------------------------------------------------
 if "cash" not in st.session_state:
     st.session_state.cash = 10_000
 
@@ -47,9 +41,7 @@ if "positions" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# ---------------------------------------------------------
-# Interface principale
-# ---------------------------------------------------------
+
 st.write("Aperçu des données :", data.head())
 
 actifs = st.multiselect("Actifs à afficher", data.columns.tolist(), default=["Bitcoin"])
@@ -64,9 +56,11 @@ st.line_chart(subset[actifs])
 st.subheader("Valeurs actuelles")
 st.dataframe(prix_actuels[actifs])
 
-# ---------------------------------------------------------
-# Zone de trading
-# ---------------------------------------------------------
+
+
+
+
+
 st.header("Trading")
 
 actif = st.selectbox("Sélectionne un actif", data.columns)
@@ -97,9 +91,11 @@ with col_vente:
         else:
             st.error("Quantité insuffisante pour vendre.")
 
-# ---------------------------------------------------------
-# Portefeuille
-# ---------------------------------------------------------
+
+
+
+
+
 st.header("Portefeuille")
 
 df_positions = pd.DataFrame({
