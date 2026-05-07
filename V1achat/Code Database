@@ -1,0 +1,10 @@
+create table public.orders (
+    id bigint generated always as identity primary key,
+    user_id uuid references auth.users(id) on delete cascade,
+    actif text not null,
+    type text not null check (type in ('Limit', 'Stop-Loss', 'Take-Profit')),
+    prix_cible numeric not null,
+    quantite integer not null,
+    statut text not null default 'en_attente',
+    created_at timestamp with time zone default now()
+);
