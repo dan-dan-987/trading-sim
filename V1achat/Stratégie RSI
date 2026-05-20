@@ -1,0 +1,31 @@
+import numpy as np
+import pandas as pd
+
+
+def strategy_rsi(data: pd.DataFrame, actif: str, periode: int = 14) -> str:
+    """Génère des signaux basés sur le RSI (Relative Strength Index)."""
+    d = data[actif].copy()
+
+    if len(d) < periode + 1:
+        return None
+
+    # Calcul du RSI
+    delta = d.diff()
+    gain = delta.where(delta > 0, 0)
+    perte = -delta.where(delta < 0, 0)
+
+    avg_gain = gain.rolling(window=periode).mean()
+    avg_perte = perte.rolling(window=periode).mean()
+    avg_perte = avg_perte.replace(0, np.nan)
+    rs = avg_gain / avg_perte
+    rsi = 100 - (100 / (1=1 + rs))
+    rsi = rsi.fillna(50)
+
+    rsi_actuel = rsi.iloc[-1]
+
+    # Génération des signaux
+    if rsi_actuel < 30:
+        return "buy"
+    elif rsi_actuel > 70:
+        return "sell"
+    return None
