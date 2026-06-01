@@ -19,7 +19,6 @@ def afficher_arcade_mode(user_id: str):
 
     market_data = load_market_data()
 
-    #  INITIALISATION TEMPS
     if "start_index" not in st.session_state:
         max_start = max(1, len(market_data) - 200)
         st.session_state.start_index = random.randint(0, max_start)
@@ -35,7 +34,6 @@ def afficher_arcade_mode(user_id: str):
         new_index = min(st.session_state.current_index + nb_jours, len(market_data) - 1)
         st.session_state.current_index = new_index
 
-    #  DONNÉES DU JOUR
     jour = st.session_state.current_index
     subset = market_data.iloc[st.session_state.start_index:jour + 1]
     prix_actuels = subset.iloc[-1]
@@ -44,19 +42,15 @@ def afficher_arcade_mode(user_id: str):
     history_df = get_history(user_id)
     positions = calculate_positions(history_df, market_data.columns)
 
-    # Exécution automatique des ordres (limit, stop-loss, take-profit)
     check_orders(user_id, prix_actuels)
 
-    # Rechargement après exécution
     current_cash = get_user_data(user_id)
     history_df = get_history(user_id)
     positions = calculate_positions(history_df, market_data.columns)
 
-    #  GRAPHIQUE
     actifs = st.multiselect("Actifs à afficher", market_data.columns.tolist(), default=["Bitcoin"])
     st.line_chart(subset[actifs])
 
-    #  TRADING MANUEL
     st.header("Trading manuel")
 
     col_t1, col_t2 = st.columns(2)
@@ -92,7 +86,6 @@ def afficher_arcade_mode(user_id: str):
             else:
                 st.error("Pas assez de titres.")
 
-    #  ORDRES AVANCÉS
     st.header("Ordres avancés")
 
     col_o1, col_o2, col_o3, col_o4 = st.columns(4)
@@ -112,7 +105,6 @@ def afficher_arcade_mode(user_id: str):
             save_order(user_id, actif_sel, type_ordre, prix_cible, quantite_ordre, trailing)
             st.success("Ordre avancé placé")
 
-    #  LISTE DES ORDRES + MODIFICATION + SUPPRESSION
     open_orders = get_open_orders(user_id)
 
     if open_orders:
@@ -139,7 +131,6 @@ def afficher_arcade_mode(user_id: str):
                     st.success("Ordre supprimé")
                     st.rerun()
 
-    #  FORMULAIRE DE MODIFICATION
     if "edit_order" in st.session_state:
         order = st.session_state["edit_order"]
         st.subheader(f"Modifier l’ordre {order['id']}")
@@ -158,7 +149,6 @@ def afficher_arcade_mode(user_id: str):
             del st.session_state["edit_order"]
             st.rerun()
 
-    #  HISTORIQUE DES ORDRES
     st.header("Historique des ordres exécutés / annulés")
 
     history = get_order_history(user_id)
@@ -167,7 +157,6 @@ def afficher_arcade_mode(user_id: str):
     else:
         st.info("Aucun ordre exécuté ou annulé pour le moment.")
 
-    #  PORTEFEUILLE
     st.header("Mon Portefeuille")
 
     df_p = pd.DataFrame({
