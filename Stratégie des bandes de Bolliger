@@ -1,0 +1,26 @@
+import pandas as pd
+
+
+def strategy_bollinger(data: pd.DataFrame, actif: str) -> str:
+    """Génère des signaux basés sur les Bandes de Bollinger."""
+    d = data[actif]
+
+    if len(d) < 20:
+        return None
+
+    # Moyenne mobile et écart-type 
+    sma20 = d.rolling(20).mean()
+    std20 = d.rolling(20).std()
+
+    # Bandes supérieure et inférieure
+    bande_sup = sma20 + (2 * std20)
+    bande_inf = sma20 - (2 * std20)
+
+    prix_actuel = d.iloc[-1]
+
+    # Génération des signaux
+    if prix_actuel < bande_inf.iloc[-1]:
+        return "buy"
+    elif prix_actuel > bande_sup.iloc[-1]:
+        return "sell"
+    return None
